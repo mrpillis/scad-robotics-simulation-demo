@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 300" font-family="Helvetica, Arial, sans-serif">
+  <rect width="980" height="300" fill="#ffffff"/>
+  <defs>
+    <marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#2b2b2b"/>
+    </marker>
+  </defs>
+  <text x="490" y="32" text-anchor="middle" font-size="21" font-weight="700" fill="#1a1a1a">Two perception pipelines from the demos</text>
+
+  <text x="20" y="80" font-size="14" font-weight="700" fill="#7a5200">Demo 3 · lidar</text>
+  <g font-size="13" text-anchor="middle">
+    <rect x="20" y="92" width="150" height="56" rx="8" fill="#fff3d6" stroke="#d99a12"/><text x="95" y="116">15-beam scan</text><text x="95" y="134" fill="#555">10 Hz</text>
+    <rect x="210" y="92" width="150" height="56" rx="8" fill="#fff3d6" stroke="#d99a12"/><text x="285" y="116">occupancy grid</text><text x="285" y="134" fill="#555">5 cm cells</text>
+    <rect x="400" y="92" width="150" height="56" rx="8" fill="#fff3d6" stroke="#d99a12"/><text x="475" y="116">inflate obstacles</text><text x="475" y="134" fill="#555">by robot radius</text>
+    <rect x="590" y="92" width="150" height="56" rx="8" fill="#fff3d6" stroke="#d99a12"/><text x="665" y="116">A* path</text><text x="665" y="134" fill="#555">re-plan 4×/s</text>
+    <rect x="780" y="92" width="180" height="56" rx="8" fill="#f1e2bd" stroke="#d99a12"/><text x="870" y="116">pure pursuit</text><text x="870" y="134" fill="#555">→ wheel speeds</text>
+  </g>
+  <g stroke="#2b2b2b" stroke-width="2" marker-end="url(#b)">
+    <line x1="170" y1="120" x2="208" y2="120"/><line x1="360" y1="120" x2="398" y2="120"/>
+    <line x1="550" y1="120" x2="588" y2="120"/><line x1="740" y1="120" x2="778" y2="120"/>
+  </g>
+
+  <text x="20" y="200" font-size="14" font-weight="700" fill="#1d3570">Demo 4 · camera</text>
+  <g font-size="13" text-anchor="middle">
+    <rect x="20" y="212" width="150" height="56" rx="8" fill="#e9eef8" stroke="#3f63b5"/><text x="95" y="236">RGB image</text><text x="95" y="254" fill="#555">640 × 360, 30 Hz</text>
+    <rect x="210" y="212" width="150" height="56" rx="8" fill="#e9eef8" stroke="#3f63b5"/><text x="285" y="236">HSV colour space</text><text x="285" y="254" fill="#555">separate hue</text>
+    <rect x="400" y="212" width="150" height="56" rx="8" fill="#e9eef8" stroke="#3f63b5"/><text x="475" y="236">threshold orange</text><text x="475" y="254" fill="#555">+ clean-up</text>
+    <rect x="590" y="212" width="150" height="56" rx="8" fill="#e9eef8" stroke="#3f63b5"/><text x="665" y="236">largest blob</text><text x="665" y="254" fill="#555">centre, size</text>
+    <rect x="780" y="212" width="180" height="56" rx="8" fill="#d6e0f4" stroke="#3f63b5"/><text x="870" y="236">bearing → steer</text><text x="870" y="254" fill="#555">search · track · arrive</text>
+  </g>
+  <g stroke="#2b2b2b" stroke-width="2" marker-end="url(#b)">
+    <line x1="170" y1="240" x2="208" y2="240"/><line x1="360" y1="240" x2="398" y2="240"/>
+    <line x1="550" y1="240" x2="588" y2="240"/><line x1="740" y1="240" x2="778" y2="240"/>
+  </g>
+</svg>
