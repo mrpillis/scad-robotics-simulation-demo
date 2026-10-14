@@ -267,7 +267,45 @@ footer p{margin:4px 0}
       <li>These demo files load easily if you have pip and Python installed.</li>
       <li>Running on MuJoCo, you can test out some basic simulations.</li>
       <li>You can even load your own custom robot built from ArtifactArena.</li>
-      <li>These are the recorded versions; in class we can run them live.</li>
+      <li>These are the recorded versions; in class we can run them live.
+<ol>
+  <li>
+    <strong>Check that Python 3.12 is installed</strong>
+    <pre><code class="language-bash">python3.12 --version</code></pre>
+    <p>If it says <code>command not found</code>, install it first from <a href="https://www.python.org/downloads/macos/">https://www.python.org/downloads/macos/</a>: download the macOS installer, run it, and open a new Terminal window.</p>
+  </li>
+
+  <li>
+    <strong>Rebuild the environment with 3.12</strong>
+    <pre><code class="language-bash">cd ~/scad-robotics-simulation-demo
+deactivate
+rm -rf .venv
+python3.12 -m venv .venv
+source .venv/bin/activate
+python --version</code></pre>
+    <p>The last line must say <code>Python 3.12</code>. If it still says 3.9, stop and paste the output here.</p>
+  </li>
+
+  <li>
+    <strong>Install and run</strong>
+    <pre><code class="language-bash">pip install --upgrade pip
+pip install -r requirements-demo.txt
+python demo/03_sensor_dashboard.py</code></pre>
+  </li>
+
+  <li>
+    <strong>Alternative: Python 3.13</strong>
+    <p>Run these one at a time:</p>
+    <pre><code class="language-bash">cd ~/scad-robotics-simulation-demo
+rm -rf .venv
+python3.13 -m venv .venv
+source .venv/bin/activate
+python --version
+pip install --upgrade pip
+pip install -r requirements-demo.txt
+python demo/03_sensor_dashboard.py</code></pre>
+  </li>
+</ol>
     </ul>
     <div class="demos">
       <article class="demo">
