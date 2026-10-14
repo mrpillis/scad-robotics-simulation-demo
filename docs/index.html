@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Simulation for Robotics — D. Pillis, SCAD Robotics Professor Demo</title>
+<meta name="description" content="Lecture, live demo and discussion on simulation for robotics: why it matters, how Isaac Sim, mjlab and Unity compare, and a live MuJoCo rover demo with handouts.">
+<meta property="og:title" content="Simulation for Robotics — SCAD Robotics Professor Demo">
+<meta property="og:description" content="Lecture, live demo and discussion by D. Pillis.">
+<meta property="og:image" content="site_assets/05_sim_to_real.png">
+<style>
+/* Type: Montserrat (OFL), self-hosted, set light. Colour: intense pink, hard black, white. */
+@font-face{font-family:"Montserrat";src:url("site_assets/fonts/Montserrat-Variable.ttf") format("truetype");font-weight:100 900;font-display:swap}
+:root{--pink:#EC008C;--pink-soft:#FDE3F1;--black:#000;--white:#fff;--line:#000;--radius:4px;
+  --font:"Montserrat","Helvetica Neue",Arial,sans-serif;--wrap:1180px;--measure:66ch}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--white);color:var(--black);font-family:var(--font);font-weight:400;font-size:17px;line-height:1.65}
+img,video{max-width:100%;display:block}
+a{color:var(--black)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--black);outline-offset:3px;border-radius:var(--radius)}
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 28px}
+@media (max-width:600px){.wrap{padding:0 16px}body{font-size:16px}}
+p{max-width:var(--measure)}
+h1,h2,h3,.brand,.nav a,.btn,.who,.num,.t,thead th,cite,.copy,.back,.stat b,.school,tbody th{text-transform:uppercase}
+h1,h2{font-weight:200;letter-spacing:.04em}
+h3{font-weight:500;letter-spacing:.12em}
+
+/* nav */
+.nav{position:sticky;top:0;z-index:10;background:var(--white);border-bottom:1px solid var(--black)}
+.nav .wrap{display:flex;align-items:center;gap:20px;height:64px}
+.brand{font-weight:300;font-size:16px;letter-spacing:.14em;white-space:nowrap;text-decoration:none;display:flex;align-items:center;gap:12px}
+.brand i{font-style:normal;font-weight:200;font-size:28px;line-height:1;color:var(--pink)}
+.brand i::before{content:"×"}
+.nav ul{display:flex;gap:2px;list-style:none;margin:0 0 0 auto;padding:0}
+.nav ul a{display:block;white-space:nowrap;padding:7px 12px;font-size:12.5px;font-weight:400;letter-spacing:.14em;text-decoration:none;border-radius:var(--radius)}
+.nav ul a:hover{color:var(--pink)}
+.nav ul a.active{background:var(--pink);color:var(--black)}
+.nav .cta{padding:8px 14px;font-size:12.5px;font-weight:500;letter-spacing:.14em;text-decoration:none;border:1px solid var(--black);border-radius:var(--radius);white-space:nowrap}
+.nav .cta:hover{background:var(--black);color:var(--white)}
+@media (max-width:1120px){.nav ul{display:none}.nav .cta{margin-left:auto}}
+@media (max-width:480px){.brand{font-size:12px;letter-spacing:.08em}.nav .cta{font-size:11px;padding:7px 9px}}
+
+/* buttons */
+.btn{display:inline-block;text-decoration:none;font-weight:500;font-size:13.5px;letter-spacing:.16em;padding:15px 24px;border-radius:var(--radius);background:var(--black);color:var(--white);border:1px solid var(--black)}
+.btn.line,.btn.sun,.btn.pink{background:transparent;color:var(--black)}
+.btn:hover{background:var(--white);color:var(--black)}
+.btn.line:hover,.btn.sun:hover,.btn.pink:hover{background:var(--black);color:var(--white)}
+
+/* hero: pink field, thin type, giant X */
+.hero{background:var(--pink);color:var(--black);position:relative;overflow:hidden;border-bottom:1px solid var(--black)}
+.hero .wrap{display:grid;grid-template-columns:1.15fr 1fr;gap:40px;align-items:center;padding-top:84px;padding-bottom:96px;min-height:620px}
+@media (max-width:960px){.hero .wrap{grid-template-columns:1fr;padding-top:48px;padding-bottom:40px;min-height:0}}
+.who{font-weight:500;font-size:13px;letter-spacing:.2em;margin:0 0 28px}
+h1{font-size:clamp(48px,7vw,100px);line-height:1;margin:0 0 30px;font-weight:200}
+h1 span{display:block}
+h1 span:nth-child(2){font-weight:100}
+.tagline{font-size:clamp(18px,1.9vw,22px);font-weight:300;line-height:1.5;max-width:30ch;margin:0 0 36px}
+.buttons{display:flex;flex-wrap:wrap;gap:12px}
+.school{margin-top:40px;font-size:12px;letter-spacing:.2em;font-weight:500}
+.mark{position:relative;aspect-ratio:1/1;width:100%;max-width:520px;justify-self:end}
+@media (max-width:960px){.mark{justify-self:center;max-width:380px}}
+.mark .x{position:absolute;inset:0;display:grid;place-items:center;font-weight:100;font-size:clamp(260px,34vw,520px);line-height:.8;color:var(--black)}
+.mark .scad{position:absolute;left:0;bottom:-2%;font-weight:200;font-size:clamp(28px,3.4vw,46px);letter-spacing:.32em}
+.mark .axis{position:absolute;right:0;top:0;font-size:11px;letter-spacing:.2em;font-weight:500;text-transform:uppercase}
+.rays{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.rays line{stroke:var(--black);stroke-width:.7;stroke-dasharray:320;stroke-dashoffset:320;animation:fire 1.8s cubic-bezier(.2,.7,.2,1) forwards}
+.rays line.xs{stroke-width:2.2;stroke-dasharray:700;stroke-dashoffset:700;animation-duration:1.1s}
+.rays circle{fill:var(--white);stroke:var(--black);stroke-width:.8;opacity:0;animation:hit .3s ease-out forwards}
+@keyframes fire{to{stroke-dashoffset:0}}
+@keyframes hit{to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.rays line{animation:none;stroke-dashoffset:0}.rays line.xs{stroke-width:2.2;stroke-dasharray:700;stroke-dashoffset:700;animation-duration:1.1s}
+.rays circle{animation:none;opacity:1}}
+
+/* quote */
+.quote{background:var(--white);padding:96px 0 88px;border-bottom:1px solid var(--black)}
+.quote blockquote{margin:0;font-weight:200;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(28px,4vw,52px);line-height:1.15;max-width:24ch}
+.quote blockquote::before{content:"";display:block;width:84px;height:6px;background:var(--pink);margin-bottom:28px}
+.quote cite{display:block;margin-top:22px;font-style:normal;font-weight:500;letter-spacing:.2em;font-size:12px}
+
+/* sections: white and pink, black text everywhere */
+section.block{padding:96px 0;border-bottom:1px solid var(--black);background:var(--white)}
+#platforms,#resources{background:var(--pink)}
+h2{font-size:clamp(38px,5vw,68px);line-height:1.02;margin:0 0 22px}
+h3{font-size:14px;line-height:1.35;margin:0 0 10px}
+.lede{font-size:19px;font-weight:300;line-height:1.55;max-width:var(--measure);margin:0 0 48px}
+
+/* objectives */
+.two{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+@media (max-width:820px){.two{grid-template-columns:1fr}}
+.card{border:1px solid var(--black);border-radius:var(--radius);padding:28px 30px;background:var(--white)}
+.card.sun{background:var(--pink)}
+.card ul{padding-left:20px;margin:6px 0 0}
+.card li{margin:9px 0;max-width:60ch}
+.card li::marker{color:var(--black)}
+
+/* run of show (a sequence) */
+ol.timeline{list-style:none;margin:60px 0 0;padding:0;display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--black)}
+ol.timeline li{padding:18px 16px 4px 0;position:relative}
+ol.timeline li::before{content:"";position:absolute;top:-7px;left:0;width:13px;height:13px;border-radius:50%;background:var(--white);border:1px solid var(--black)}
+ol.timeline li.live::before{background:var(--pink)}
+ol.timeline .t{font-weight:500;font-size:12px;letter-spacing:.16em;font-variant-numeric:tabular-nums}
+ol.timeline h3{font-size:13px;margin:6px 0 4px}
+ol.timeline p{font-size:14px;font-weight:300;margin:0 0 6px}
+ol.timeline a{font-size:12px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;text-decoration-color:var(--pink);text-decoration-thickness:2px;text-underline-offset:4px}
+@media (max-width:960px){ol.timeline{grid-template-columns:1fr 1fr 1fr;row-gap:28px}}
+@media (max-width:560px){ol.timeline{grid-template-columns:1fr 1fr}}
+
+/* demos */
+.demos{display:grid;grid-template-columns:1fr 1fr;gap:64px 44px}
+@media (max-width:860px){.demos{grid-template-columns:1fr}}
+.frame{border:1px solid var(--black);border-radius:var(--radius);overflow:hidden;background:var(--black)}
+.demo .frame{box-shadow:10px 10px 0 var(--pink)}
+.demo video,.demo img{width:100%}
+.demo .head{display:flex;align-items:center;gap:14px;margin-top:28px}
+.num{font-weight:200;font-size:26px;line-height:1;width:46px;height:46px;display:grid;place-items:center;border-radius:50%;background:var(--pink);color:var(--black);flex:none}
+.demo h3{margin:0;font-size:16px}
+.demo p{font-size:16.5px;font-weight:300;margin:14px 0}
+.demo code{font-size:13.5px;background:var(--pink-soft);color:var(--black);padding:5px 9px;border-radius:var(--radius);display:inline-block}
+.demo.wide{grid-column:1/-1}
+.demo.wide .inner{display:grid;grid-template-columns:1.6fr 1fr;gap:44px;align-items:center}
+@media (max-width:860px){.demo.wide .inner{grid-template-columns:1fr}}
+.stat{display:flex;gap:12px;margin:18px 0}
+.stat div{flex:1;border:1px solid var(--black);border-radius:var(--radius);padding:14px 16px}
+.stat .good{background:var(--pink)}
+.stat b{display:block;font-weight:200;font-size:44px;line-height:1}
+.stat span{font-size:13px}
+
+/* table */
+.tablewrap{overflow-x:auto;border:1px solid var(--black);border-radius:var(--radius);background:var(--white)}
+table{border-collapse:collapse;width:100%;min-width:780px;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:16px 18px;border-bottom:1px solid var(--black)}
+thead th{font-weight:400;font-size:14px;letter-spacing:.14em;background:var(--white);border-bottom:2px solid var(--black)}
+tbody th{font-weight:500;width:170px;font-size:12px;letter-spacing:.14em}
+td{font-weight:300}
+tbody tr:last-child td,tbody tr:last-child th{border-bottom:0}
+.summary{margin-top:44px;font-weight:200;text-transform:uppercase;letter-spacing:.03em;font-size:clamp(22px,2.6vw,32px);line-height:1.3;max-width:40ch}
+.note{font-size:16px;margin-top:18px}
+.note a{font-weight:500}
+
+/* handouts */
+.handouts{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--black)}
+.handouts a{display:block;text-decoration:none;padding:24px 22px 28px 0;margin-right:22px;border-right:1px solid var(--black)}
+.handouts a:last-child{border-right:0}
+.handouts a:hover h3{color:var(--pink)}
+.handouts p{font-size:15px;font-weight:300;margin:0}
+@media (max-width:960px){.handouts{grid-template-columns:1fr 1fr}.handouts a{border-right:0;border-bottom:1px solid var(--black)}}
+@media (max-width:540px){.handouts{grid-template-columns:1fr}}
+.pdfrow{margin-top:44px;display:flex;flex-wrap:wrap;gap:12px}
+
+/* resources */
+pre{background:var(--white);color:var(--black);border:1px solid var(--black);border-radius:var(--radius);padding:22px 24px;overflow-x:auto;font-size:14.5px;line-height:1.7;margin:0}
+.res{columns:3;column-gap:40px;margin-top:52px}
+.res div{break-inside:avoid;margin-bottom:30px}
+.res h3{font-size:13px}
+.res ul{list-style:none;padding:0;margin:0}
+.res li{margin:7px 0;font-size:15.5px}
+.res a{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+@media (max-width:860px){.res{columns:2}}
+@media (max-width:520px){.res{columns:1}}
+
+/* credits */
+#credits pre{background:var(--pink-soft);border-color:var(--pink)}
+.copy{margin-top:14px;font:inherit;font-weight:500;font-size:12.5px;letter-spacing:.14em;background:var(--white);color:var(--black);border:1px solid var(--black);border-radius:var(--radius);padding:11px 16px;cursor:pointer}
+.copy:hover{background:var(--black);color:var(--white)}
+
+.back{position:fixed;right:20px;bottom:20px;z-index:9;background:var(--white);color:var(--black);border:1px solid var(--black);border-radius:var(--radius);padding:10px 14px;font-weight:500;font-size:11.5px;letter-spacing:.14em;text-decoration:none;opacity:0;pointer-events:none;transition:opacity .2s}
+.back.show{opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){.back{transition:none}}
+
+footer{background:var(--pink);color:var(--black);padding:44px 0 60px;font-size:14px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:20px}
+footer p{margin:4px 0}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Main">
+  <div class="wrap">
+    <a class="brand" href="#top">SCAD<i></i>Simulation for Robotics</a>
+    <ul>
+      <li><a href="#session">Session</a></li>
+      <li><a href="#demos">Live demo</a></li>
+      <li><a href="#platforms">Platforms</a></li>
+      <li><a href="#handouts">Handouts</a></li>
+      <li><a href="#resources">Resources</a></li>
+    </ul>
+    <a class="cta" href="https://github.com/mrpillis/scad-robotics-simulation-demo">Get the code</a>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-text">
+      <p class="who">SCAD &nbsp;×&nbsp; Robotics Professor Demo &nbsp;·&nbsp; D. Pillis</p>
+      <h1><span>Simulation</span><span>for Robotics</span></h1>
+      <p class="tagline">Test it in a world that can't break before you build it in one that can.</p>
+      <div class="buttons">
+        <a class="btn" href="#demos">Watch the demos</a>
+        <a class="btn line" href="site_assets/SCAD_Robotics_Simulation_Handouts.pdf">Download handouts</a>
+        <a class="btn line" href="https://github.com/mrpillis/scad-robotics-simulation-demo">Run it yourself</a>
+      </div>
+      <p class="school">Prepared for SCAD, Savannah College of Art &amp; Design</p>
+    </div>
+    <div class="mark" aria-hidden="true">
+      <svg class="rays" viewBox="0 0 600 600" id="rays"></svg>
+      <span class="scad">SCAD</span>
+      <span class="axis">x-axis · forward</span>
+    </div>
+  </div>
+</header>
+
+<main>
+<div class="quote">
+  <div class="wrap"><div>
+    <blockquote>Make your mistakes in simulation, where they are free, and learn from reality, where they are not.</blockquote>
+    <cite>The working rule of this session</cite>
+  </div></div>
+</div>
+
+<section class="block" id="session">
+  <div class="wrap">
+    <h2>What is this session?</h2>
+    <p class="lede">Simulation accelerates robotics research and education by providing a safe, scalable, and cost-effective environment to test algorithms before deploying on physical hardware. This lecture and demo explore why simulation is indispensable, contrasting leading platforms like NVIDIA Isaac Sim, mjlab, and Unity to guide engine selection for specific research and classroom needs. A live demonstration highlights physics fidelity, sensor emulation, and rapid prototyping capabilities. The session concludes with an interactive Q&amp;A and curated resource sharing for immediate implementation.</p>
+    <div class="two">
+      <div class="card sun">
+        <h3>Session goals</h3>
+        <ul class="plain">
+          <li>Explain the critical role of simulation in modern robotics development, testing, and education.</li>
+          <li>Compare industry-standard simulation platforms to help educators and researchers choose the right workflow.</li>
+          <li>Showcase a live (digital) robot simulation to illustrate real-time physics, perception pipeline integration, and environment interaction.</li>
+          <li>Provide accessible learning resources and lead an open discussion to support practical adoption.</li>
+        </ul>
+      </div>
+      <div class="card teal">
+        <h3>Students will be able to</h3>
+        <ul class="plain">
+          <li>Evaluate simulation frameworks (e.g., Isaac Sim, Unity, etc) based on physics realism, GPU acceleration, and sensor fidelity.</li>
+          <li>Identify key advantages and constraints of running robotics algorithms in simulated environments versus physical hardware.</li>
+          <li>Demonstrate basic robot control and sensor visualization within a real-time simulation engine.</li>
+          <li>Select appropriate simulation tools tailored for specific coursework or advanced research projects.</li>
+        </ul>
+      </div>
+    </div>
+
+    <ol class="timeline" aria-label="Order of the session">
+      <li><span class="t">0:03</span><h3>Why simulation</h3><p>Development, testing, education.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/01-why-simulation.md">Notes</a></li>
+      <li><span class="t">0:12</span><h3>Choosing a platform</h3><p>Realism, GPU, sensors.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/02-choosing-a-platform.md">Notes</a></li>
+      <li class="live"><span class="t">0:23</span><h3>Live demo</h3><p>Five demos, one rover.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/03-live-demo.md">Notes</a></li>
+      <li><span class="t">0:41</span><h3>Sim vs. hardware</h3><p>What transfers, what doesn't.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/04-sim-vs-hardware.md">Notes</a></li>
+      <li><span class="t">0:46</span><h3>Selecting tools</h3><p>Coursework and research.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/05-selecting-tools.md">Notes</a></li>
+      <li><span class="t">0:49</span><h3>Discussion</h3><p>Q&amp;A and resources.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/06-discussion.md">Notes</a></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block night" id="demos">
+  <div class="wrap">
+    <h2>The live demo</h2>
+    <p class="lede">One small rover in a 6 × 6 m studio, carrying wheel encoders, an IMU, a bumper, a 15-beam lidar and an RGB-D camera. The whole robot is one readable XML file, and everything runs on a laptop with MuJoCo. These are the recorded versions; in class they run live.</p>
+    <div class="demos">
+      <article class="demo">
+        <div class="frame"><video src="site_assets/01_physics_playground.mp4" poster="site_assets/01_physics_playground_poster.jpg" controls muted playsinline preload="none"></video></div>
+        <div class="head"><span class="num">1</span><h3>Physics playground</h3></div>
+        <p>Foam, rubber and steel: same shapes, different materials. Only rubber bounces; only steel slides. Change one number, re-run in seconds.</p>
+        <code>python demo/01_physics_playground.py</code>
+      </article>
+      <article class="demo">
+        <div class="frame"><video src="site_assets/02_drive_the_robot.mp4" poster="site_assets/02_drive_the_robot_poster.jpg" controls muted playsinline preload="none"></video></div>
+        <div class="head"><span class="num">2</span><h3>Drive the robot</h3></div>
+        <p>Arrow-key driving, then an autopilot aimed at the goal. With no sensors it drives straight into the blue box.</p>
+        <code>python demo/02_drive_the_robot.py</code>
+      </article>
+      <article class="demo">
+        <div class="frame"><video src="site_assets/03_sensor_dashboard.mp4" poster="site_assets/03_sensor_dashboard_poster.jpg" controls muted playsinline preload="none"></video></div>
+        <div class="head"><span class="num">3</span><h3>Sensor dashboard</h3></div>
+        <p>The same robot, sensing. Lidar builds a map, A* plans a route, pure pursuit follows it. Camera, depth, lidar, IMU and wheel encoders update live.</p>
+        <code>python demo/03_sensor_dashboard.py</code>
+      </article>
+      <article class="demo">
+        <div class="frame"><video src="site_assets/04_camera_perception.mp4" poster="site_assets/04_camera_perception_poster.jpg" controls muted playsinline preload="none"></video></div>
+        <div class="head"><span class="num">4</span><h3>Camera perception</h3></div>
+        <p>Camera only: RGB to HSV, threshold the orange beacon, find the blob, steer toward it. Search, track, arrive.</p>
+        <code>python demo/04_camera_perception.py</code>
+      </article>
+      <article class="demo wide">
+        <div class="inner">
+          <div class="frame"><img src="site_assets/05_sim_to_real.png" alt="Two overhead views. Left: twelve robots replaying ideal commands scatter and crash. Right: twelve sensing robots reach the goal in eleven worlds." loading="lazy"></div>
+          <div>
+            <div class="head" style="margin-top:0"><span class="num">5</span><h3>The sim-to-real gap</h3></div>
+            <p>Twelve randomized "realities": different floor and tire friction, mass, motor strength, sensor noise and 30 ms of delay.</p>
+            <div class="stat"><div class="bad"><b>2/12</b><span>replaying the ideal commands</span></div><div class="good"><b>11/12</b><span>sensing and re-planning</span></div></div>
+            <code>python demo/05_sim_to_real_gap.py</code>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="block sun" id="platforms">
+  <div class="wrap">
+    <h2>Choosing a platform</h2>
+    <p class="lede">Three platforms, judged on the three criteria that matter most for robotics: physics realism, GPU acceleration and sensor fidelity. Checked October 2026.</p>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col"></th><th scope="col">NVIDIA Isaac Sim + Isaac Lab</th><th scope="col">mjlab (MuJoCo + MuJoCo Warp)</th><th scope="col">Unity + Robotics Hub</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Physics realism</th><td>PhysX 5 articulations, Newton backend in 6.0. Strong for rigid bodies and grasping.</td><td>MuJoCo, the reference for accurate, stable contact in control and learning research.</td><td>PhysX ArticulationBody, tuned for games. Fine for interaction, weaker for precise contact.</td></tr>
+          <tr><th scope="row">GPU acceleration</th><td>GPU physics; thousands of parallel environments in Isaac Lab.</td><td>MuJoCo Warp; thousands of parallel environments on an NVIDIA GPU.</td><td>Graphics on the GPU, physics on the CPU. Smaller-scale training with ML-Agents.</td></tr>
+          <tr><th scope="row">Sensor fidelity</th><td>Highest: ray-traced cameras, lidar and radar, labelled synthetic data.</td><td>Rasterised RGB-D, ray-cast rangefinders, IMU, touch, force.</td><td>High-quality cameras; other sensors through packages or scripts.</td></tr>
+          <tr><th scope="row">Runs on</th><td>RTX GPU with 16 GB+, Ubuntu or Windows 11. No macOS.</td><td>MuJoCo on any laptop. Training with mjlab needs an NVIDIA GPU.</td><td>Any recent laptop, including Macs.</td></tr>
+          <tr><th scope="row">Best for</th><td>Synthetic data, digital twins, photoreal sensors. OpenUSD fits film and VFX pipelines.</td><td>Locomotion, manipulation, learning; teaching dynamics.</td><td>Interaction, VR/AR, installations, game-dev students.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="summary">Use Unity when the experience matters most, MuJoCo or mjlab when the physics and learning matter most, and Isaac Sim when the sensors and photorealism matter most. Expect to combine them.</p>
+    <p class="note">Also covered: Gazebo for ROS 2 robot stacks, Webots for first courses, and Newton, the new open GPU physics engine. <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/02-choosing-a-platform.md">Full comparison with sources</a>.</p>
+  </div>
+</section>
+
+<section class="block teal" id="handouts">
+  <div class="wrap">
+    <h2>Handouts</h2>
+    <p class="lede">Four handouts go with the session, for students to keep and continue with afterwards.</p>
+    <div class="handouts">
+      <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/handouts/01-vocabulary.md"><h3>Vocabulary</h3><p>About fifty terms, from time step to domain randomization, grouped by topic.</p></a>
+      <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/handouts/02-learning-resources.md"><h3>Learning resources</h3><p>Notebooks to start today, platform docs, free books, video courses and key papers.</p></a>
+      <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/handouts/03-leave-behind-project.md"><h3>Leave-behind project</h3><p>"Teach a robot to find its way", with Studio, Engineering and Research tracks and a rubric.</p></a>
+      <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/handouts/04-visual-guide.md"><h3>Visual guide</h3><p>The autonomy loop, a robot file explained, two perception pipelines and a sim-to-real checklist.</p></a>
+    </div>
+    <div class="pdfrow">
+      <a class="btn pink" href="site_assets/SCAD_Robotics_Simulation_Handouts.pdf">Download all four as a PDF</a>
+      <a class="btn" href="https://github.com/mrpillis/scad-robotics-simulation-demo">Clone the repository</a>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="resources">
+  <div class="wrap">
+    <h2>Start today</h2>
+    <p class="lede">Everything in the demo runs on a laptop. Three commands:</p>
+    <pre><code>git clone https://github.com/mrpillis/scad-robotics-simulation-demo
+cd scad-robotics-simulation-demo && pip install -r requirements-demo.txt
+python demo/03_sensor_dashboard.py</code></pre>
+    <div class="res">
+      <div><h3>Try in the browser</h3><ul>
+        <li><a href="https://colab.research.google.com/github/google-deepmind/mujoco/blob/main/python/tutorial.ipynb">MuJoCo tutorial notebook</a></li>
+        <li><a href="https://playground.mujoco.org">MuJoCo Playground</a></li>
+        <li><a href="https://artifactarena.ai/play">ArtifactArena Play</a></li></ul></div>
+      <div><h3>Platforms</h3><ul>
+        <li><a href="https://docs.isaacsim.omniverse.nvidia.com">Isaac Sim</a> and <a href="https://isaac-sim.github.io/IsaacLab">Isaac Lab</a></li>
+        <li><a href="https://github.com/mujocolab/mjlab">mjlab</a> and <a href="https://mujoco.readthedocs.io">MuJoCo</a></li>
+        <li><a href="https://github.com/Unity-Technologies/Unity-Robotics-Hub">Unity Robotics Hub</a></li>
+        <li><a href="https://gazebosim.org">Gazebo</a>, <a href="https://cyberbotics.com">Webots</a>, <a href="https://github.com/newton-physics/newton">Newton</a></li></ul></div>
+      <div><h3>Free books</h3><ul>
+        <li><a href="https://hades.mech.northwestern.edu/index.php/Modern_Robotics">Modern Robotics</a>, Lynch and Park</li>
+        <li><a href="https://underactuated.mit.edu">Underactuated Robotics</a>, Tedrake</li>
+        <li><a href="https://manipulation.mit.edu">Robotic Manipulation</a>, Tedrake</li>
+        <li><a href="http://lavalle.pl/planning/">Planning Algorithms</a>, LaValle</li></ul></div>
+      <div><h3>Papers</h3><ul>
+        <li><a href="https://arxiv.org/abs/1703.06907">Domain randomization</a>, Tobin et al. 2017</li>
+        <li><a href="https://arxiv.org/abs/2009.13303">Sim-to-real survey</a>, Zhao et al. 2020</li>
+        <li><a href="https://arxiv.org/abs/2109.11978">Learning to walk in minutes</a>, Rudin et al. 2021</li>
+        <li><a href="https://arxiv.org/abs/2601.22074">mjlab</a>, Zakka et al. 2026</li></ul></div>
+      <div><h3>Full list</h3><ul>
+        <li><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/handouts/02-learning-resources.md">All learning resources</a></li></ul></div>
+    </div>
+  </div>
+</section>
+
+<section class="block ultra" id="credits">
+  <div class="wrap two">
+    <div>
+      <h2>Built on ArtifactArena</h2>
+      <p>This project is a fork of <a href="https://github.com/ArtifactArena/harness-public">ArtifactArena</a> by Tiwary, Mayo, Behari, Sun, Alabdulkareem, Galatzer-Levy, Katz and Cheung (MIT CSAIL, MIT Media Lab, NYU, UCSF). Their MuJoCo competition engine powers the capstone demo. Physics by <a href="https://mujoco.org">MuJoCo</a>.</p>
+      <p>Lecture notes, handouts and demos by D. Pillis. MIT License.</p>
+    </div>
+    <div>
+      <h3>Cite the engine</h3>
+<pre id="bib"><code>@article{artifactarena2026,
+  title  = {ArtifactArena: Evaluating Models by What
+            They Build in the Physical World},
+  author = {Tiwary, Kushagra and Mayo, David and
+            Behari, Nikhil and Sun, Xiangzhou and
+            Alabdulkareem, Abdulrahman and
+            Galatzer-Levy, Isaac and Katz, Boris and
+            Cheung, Brian},
+  year   = {2026},
+  url    = {https://artifactarena.ai}
+}</code></pre>
+      <button class="copy" type="button" id="copy">Copy citation</button>
+    </div>
+  </div>
+</section>
+</main>
+
+<a class="back" href="#top" id="back">Back to top</a>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo">github.com/mrpillis/scad-robotics-simulation-demo</a></p>
+      <p>D. Pillis · Robotics Professor Demo for SCAD, Savannah College of Art &amp; Design</p>
+    </div>
+    <p>An independent presentation site, not an official SCAD publication.</p>
+  </div>
+</footer>
+
+<script>
+// Fifteen lidar beams fire once from the centre of the X on load.
+(function () {
+  var svg = document.getElementById('rays'); if (!svg) return;
+  var ns = 'http://www.w3.org/2000/svg', cx = 300, cy = 300;
+  [[70, 70, 530, 530], [530, 70, 70, 530]].forEach(function (c, k) {  // the X
+    var l = document.createElementNS(ns, 'line');
+    l.setAttribute('class', 'xs'); l.setAttribute('x1', c[0]); l.setAttribute('y1', c[1]); l.setAttribute('x2', c[2]); l.setAttribute('y2', c[3]);
+    l.style.animationDelay = (k * 0.15) + 's'; svg.appendChild(l);
+  });
+  var lengths = [250, 290, 270, 230, 296, 260, 280, 298, 240, 286, 220, 292, 268, 250, 236];
+  for (var i = 0; i < 15; i++) {
+    var a = (-105 + i * 15) * Math.PI / 180 - Math.PI / 2;
+    var L = lengths[i], x = cx + L * Math.cos(a), y = cy + L * Math.sin(a);
+    var line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', cx); line.setAttribute('y1', cy); line.setAttribute('x2', x); line.setAttribute('y2', y);
+    line.style.animationDelay = (0.2 + i * 0.05) + 's';
+    svg.appendChild(line);
+    var dot = document.createElementNS(ns, 'circle');
+    dot.setAttribute('cx', x); dot.setAttribute('cy', y); dot.setAttribute('r', 4);
+    dot.style.animationDelay = (1.3 + i * 0.05) + 's';
+    svg.appendChild(dot);
+  }
+})();
+document.getElementById('copy').addEventListener('click', function () {
+  var b = this, text = document.getElementById('bib').innerText;
+  (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () {
+    b.textContent = 'Citation copied';
+  }, function () { b.textContent = 'Select the text above to copy'; });
+});
+// highlight the current section in the nav, show the back button after the hero
+(function () {
+  var links = Array.prototype.slice.call(document.querySelectorAll('.nav ul a'));
+  var back = document.getElementById('back');
+  function update() {
+    var y = window.scrollY + 120, current = null;
+    links.forEach(function (a) { var el = document.querySelector(a.getAttribute('href')); if (el && el.offsetTop <= y) current = a; });
+    links.forEach(function (a) { a.classList.toggle('active', a === current); });
+    back.classList.toggle('show', window.scrollY > 600);
+  }
+  window.addEventListener('scroll', update, { passive: true }); update();
+})();
+</script>
+</body>
+</html>

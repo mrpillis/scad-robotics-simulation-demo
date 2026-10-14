@@ -1,0 +1,147 @@
+<!--
+  SCAD Robotics Simulation Demo — teaching scene
+  A small differential-drive rover in a 6 x 6 m studio, with the sensor set a
+  real classroom robot would carry: wheel encoders, an IMU, a bumper switch,
+  a 15-beam planar "lidar" (rangefinders) and an RGB-D camera.
+-->
+<mujoco model="scad_lab">
+  <compiler angle="radian" autolimits="true"/>
+  <option timestep="0.002" integrator="implicitfast" gravity="0 0 -9.81"/>
+
+  <visual>
+    <global offwidth="1280" offheight="720" azimuth="135" elevation="-30"/>
+    <quality shadowsize="4096"/>
+    <headlight ambient="0.25 0.25 0.25" diffuse="0.25 0.25 0.25" specular="0.05 0.05 0.05"/>
+    <map znear="0.01" zfar="40"/>
+    <rgba rangefinder="0.93 0.0 0.55 0.8"/>
+  </visual>
+
+  <asset>
+    <texture name="sky" type="skybox" builtin="gradient" rgb1="1.0 1.0 1.0" rgb2="0.8 0.8 0.8" width="512" height="512"/>
+    <texture name="floor_tex" type="2d" builtin="checker" rgb1="0.82 0.82 0.80" rgb2="0.72 0.72 0.70" width="512" height="512"/>
+    <material name="floor" texture="floor_tex" texrepeat="12 12" specular="0.05" shininess="0.1"/>
+    <material name="wall" rgba="0.05 0.05 0.05 1"/>
+    <material name="chassis" rgba="0.12 0.12 0.13 1" specular="0.5"/>
+    <material name="accent" rgba="0.93 0.0 0.55 1"/>
+    <material name="tire" rgba="0.05 0.05 0.05 1"/>
+    <material name="obst_a" rgba="0.16 0.67 0.89 1"/>
+    <material name="obst_b" rgba="0.57 0.15 0.56 1"/>
+    <material name="obst_c" rgba="0.3 0.72 0.28 1"/>
+    <material name="goal" rgba="1.0 0.42 0.0 1" emission="0.3"/>
+  </asset>
+
+  <default>
+    <geom friction="0.9 0.005 0.0001" solref="0.005 1"/>
+    <default class="wall">
+      <geom type="box" material="wall"/>
+    </default>
+    <default class="beam">
+      <site type="sphere" size="0.008" rgba="1 0.25 0.1 1" group="3"/>
+    </default>
+  </default>
+
+  <worldbody>
+    <light name="key" directional="true" pos="2 -2 5" dir="-0.3 0.4 -1" diffuse="0.45 0.45 0.45" specular="0.1 0.1 0.1" castshadow="true"/>
+    <light name="fill" directional="true" pos="-3 3 4" dir="0.4 -0.4 -1" diffuse="0.15 0.15 0.18" specular="0 0 0" castshadow="false"/>
+    <geom name="floor" type="plane" size="3 3 0.1" material="floor"/>
+
+    <!-- studio walls -->
+    <geom name="wall_n" class="wall" size="3.0 0.05 0.2" pos="0 3.05 0.2"/>
+    <geom name="wall_s" class="wall" size="3.0 0.05 0.2" pos="0 -3.05 0.2"/>
+    <geom name="wall_e" class="wall" size="0.05 3.1 0.2" pos="3.05 0 0.2"/>
+    <geom name="wall_w" class="wall" size="0.05 3.1 0.2" pos="-3.05 0 0.2"/>
+
+    <!-- obstacles -->
+    <geom name="obstacle_1" type="box" size="0.25 0.25 0.25" pos="0.9 0.3 0.25" material="obst_a"/>
+    <geom name="obstacle_2" type="cylinder" size="0.22 0.3" pos="-0.6 1.3 0.3" material="obst_b"/>
+    <geom name="obstacle_3" type="box" size="0.6 0.12 0.2" pos="1.0 1.6 0.2" euler="0 0 0.5" material="obst_c"/>
+    <geom name="obstacle_4" type="cylinder" size="0.18 0.3" pos="-1.6 -0.7 0.3" material="obst_a"/>
+    <geom name="obstacle_5" type="box" size="0.2 0.5 0.25" pos="-0.2 -1.6 0.25" material="obst_b"/>
+
+    <!-- goal beacon: a hovering orange marker above an orange floor pad.
+         Not a collider, and it sits above/below the lidar plane so only the camera "sees" it. -->
+    <body name="goal" mocap="true" pos="2.2 2.2 0">
+      <geom name="goal_beacon" type="sphere" size="0.13" pos="0 0 0.6" material="goal" contype="0" conaffinity="0"/>
+      <geom name="goal_pad" type="cylinder" size="0.3 0.003" pos="0 0 0.003" material="goal" contype="0" conaffinity="0"/>
+    </body>
+
+    <camera name="overhead" pos="0 0 8.2" xyaxes="1 0 0 0 1 0" fovy="45"/>
+    <camera name="studio" pos="-4.2 -4.2 3.6" xyaxes="1 -1 0 0.42 0.42 0.8" fovy="50"/>
+
+    <!-- ===================== the rover ===================== -->
+    <body name="rover" pos="-2.2 -2.2 0.07" euler="0 0 0.785">
+      <freejoint name="rover_root"/>
+      <geom name="chassis" type="box" size="0.16 0.11 0.035" pos="0 0 0.02" mass="3.0" material="chassis"/>
+      <geom name="deck" type="box" size="0.10 0.09 0.015" pos="-0.02 0 0.07" mass="0.4" material="accent"/>
+      <geom name="mast" type="cylinder" size="0.012 0.05" pos="0.08 0 0.1" mass="0.05" material="chassis"/>
+      <geom name="bumper" type="box" size="0.015 0.12 0.025" pos="0.175 0 0.01" mass="0.1" material="accent"/>
+      <geom name="caster" type="sphere" size="0.03" pos="-0.13 0 -0.04" mass="0.1" friction="0.0 0.0 0.0" condim="1" rgba="0.6 0.6 0.6 1"/>
+
+      <site name="imu" pos="0 0 0.02" size="0.01" rgba="0 1 0 1" group="3"/>
+      <site name="bumper_site" type="box" size="0.02 0.125 0.03" pos="0.175 0 0.01" rgba="1 1 0 0.2" group="3"/>
+
+      <!-- RGB-D camera on the mast, looking forward and slightly down -->
+      <camera name="rover_cam" pos="0.09 0 0.16" xyaxes="0 -1 0 0.17 0 0.985" fovy="70"/>
+      <camera name="chase" pos="-0.9 0 0.55" xyaxes="0 -1 0 0.5 0 0.866" fovy="60"/>
+
+      <!-- 15-beam planar lidar: rangefinders fire along each site's +z axis, -105..+105 deg -->
+      <site name="beam_00" class="beam" pos="0.08 0 0.13" zaxis="-0.259 -0.966 0"/>
+      <site name="beam_01" class="beam" pos="0.08 0 0.13" zaxis="0.0 -1.0 0"/>
+      <site name="beam_02" class="beam" pos="0.08 0 0.13" zaxis="0.259 -0.966 0"/>
+      <site name="beam_03" class="beam" pos="0.08 0 0.13" zaxis="0.5 -0.866 0"/>
+      <site name="beam_04" class="beam" pos="0.08 0 0.13" zaxis="0.707 -0.707 0"/>
+      <site name="beam_05" class="beam" pos="0.08 0 0.13" zaxis="0.866 -0.5 0"/>
+      <site name="beam_06" class="beam" pos="0.08 0 0.13" zaxis="0.966 -0.259 0"/>
+      <site name="beam_07" class="beam" pos="0.08 0 0.13" zaxis="1 0 0"/>
+      <site name="beam_08" class="beam" pos="0.08 0 0.13" zaxis="0.966 0.259 0"/>
+      <site name="beam_09" class="beam" pos="0.08 0 0.13" zaxis="0.866 0.5 0"/>
+      <site name="beam_10" class="beam" pos="0.08 0 0.13" zaxis="0.707 0.707 0"/>
+      <site name="beam_11" class="beam" pos="0.08 0 0.13" zaxis="0.5 0.866 0"/>
+      <site name="beam_12" class="beam" pos="0.08 0 0.13" zaxis="0.259 0.966 0"/>
+      <site name="beam_13" class="beam" pos="0.08 0 0.13" zaxis="0.0 1.0 0"/>
+      <site name="beam_14" class="beam" pos="0.08 0 0.13" zaxis="-0.259 0.966 0"/>
+
+      <body name="wheel_left" pos="0.03 0.135 0">
+        <joint name="wheel_left" type="hinge" axis="0 1 0" damping="0.01"/>
+        <geom name="wheel_left" type="cylinder" size="0.07 0.02" euler="1.5708 0 0" mass="0.3" material="tire" friction="1.2 0.005 0.0001"/>
+        <geom name="hub_left" type="cylinder" size="0.03 0.022" euler="1.5708 0 0" mass="0.01" material="accent" contype="0" conaffinity="0"/>
+      </body>
+      <body name="wheel_right" pos="0.03 -0.135 0">
+        <joint name="wheel_right" type="hinge" axis="0 1 0" damping="0.01"/>
+        <geom name="wheel_right" type="cylinder" size="0.07 0.02" euler="1.5708 0 0" mass="0.3" material="tire" friction="1.2 0.005 0.0001"/>
+        <geom name="hub_right" type="cylinder" size="0.03 0.022" euler="1.5708 0 0" mass="0.01" material="accent" contype="0" conaffinity="0"/>
+      </body>
+    </body>
+  </worldbody>
+
+  <actuator>
+    <!-- velocity servos: ctrl is the target wheel speed in rad/s -->
+    <velocity name="motor_left" joint="wheel_left" kv="8" ctrlrange="-14 14" forcerange="-0.6 0.6"/>
+    <velocity name="motor_right" joint="wheel_right" kv="8" ctrlrange="-14 14" forcerange="-0.6 0.6"/>
+  </actuator>
+
+  <sensor>
+    <jointvel name="enc_left" joint="wheel_left"/>
+    <jointvel name="enc_right" joint="wheel_right"/>
+    <accelerometer name="imu_accel" site="imu"/>
+    <gyro name="imu_gyro" site="imu"/>
+    <framepos name="gt_pos" objtype="xbody" objname="rover"/>
+    <framequat name="gt_quat" objtype="xbody" objname="rover"/>
+    <touch name="bumper" site="bumper_site"/>
+    <rangefinder name="lidar_00" site="beam_00"/>
+    <rangefinder name="lidar_01" site="beam_01"/>
+    <rangefinder name="lidar_02" site="beam_02"/>
+    <rangefinder name="lidar_03" site="beam_03"/>
+    <rangefinder name="lidar_04" site="beam_04"/>
+    <rangefinder name="lidar_05" site="beam_05"/>
+    <rangefinder name="lidar_06" site="beam_06"/>
+    <rangefinder name="lidar_07" site="beam_07"/>
+    <rangefinder name="lidar_08" site="beam_08"/>
+    <rangefinder name="lidar_09" site="beam_09"/>
+    <rangefinder name="lidar_10" site="beam_10"/>
+    <rangefinder name="lidar_11" site="beam_11"/>
+    <rangefinder name="lidar_12" site="beam_12"/>
+    <rangefinder name="lidar_13" site="beam_13"/>
+    <rangefinder name="lidar_14" site="beam_14"/>
+  </sensor>
+</mujoco>
