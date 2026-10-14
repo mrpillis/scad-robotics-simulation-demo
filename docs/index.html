@@ -195,7 +195,7 @@ footer p{margin:4px 0}
     <div class="hero-text">
       <p class="who">SCAD &nbsp;×&nbsp; Robotics Professor Demo &nbsp;·&nbsp; D. Pillis</p>
       <h1><span>Simulation</span><span>for Robotics</span></h1>
-      <p class="tagline">Test it in a world that can't break before you build it in one that can.</p>
+      <p class="tagline">Simulating your SCADBot</p>
       <div class="buttons">
         <a class="btn" href="#demos">Watch the demos</a>
         <a class="btn line" href="site_assets/SCAD_Robotics_Simulation_Handouts.pdf">Download handouts</a>
@@ -214,15 +214,15 @@ footer p{margin:4px 0}
 <main>
 <div class="quote">
   <div class="wrap"><div>
-    <blockquote>Make your mistakes in simulation, where they are free, and learn from reality, where they are not.</blockquote>
-    <cite>The working rule of this session</cite>
+    <blockquote>Simulate to Fabricate.</blockquote>
+    <cite>Virtual/Physical</cite>
   </div></div>
 </div>
 
 <section class="block" id="session">
   <div class="wrap">
-    <h2>What is this session?</h2>
-    <p class="lede">Simulation accelerates robotics research and education by providing a safe, scalable, and cost-effective environment to test algorithms before deploying on physical hardware. This lecture and demo explore why simulation is indispensable, contrasting leading platforms like NVIDIA Isaac Sim, mjlab, and Unity to guide engine selection for specific research and classroom needs. A live demonstration highlights physics fidelity, sensor emulation, and rapid prototyping capabilities. The session concludes with an interactive Q&amp;A and curated resource sharing for immediate implementation.</p>
+    <h2>What does this session cover?</h2>
+    <p class="lede">Simulation accelerates robotics research and education by providing a safe, scalable, and cost-effective environment to test algorithms before deploying on physical hardware. This lecture and demo explore why simulation is indispensable, contrasting leading platforms like NVIDIA Isaac Sim, mjlab, and Unity to guide engine selection for specific research and classroom needs. A live demonstration highlights physics fidelity, sensor emulation, and rapid prototyping capabilities. The session concludes with an interactive Q&amp;A and resource sharing for immediate implementation.</p>
     <div class="two">
       <div class="card sun">
         <h3>Session goals</h3>
@@ -245,11 +245,11 @@ footer p{margin:4px 0}
     </div>
 
     <ol class="timeline" aria-label="Order of the session">
-      <li><span class="t">0:03</span><h3>Why simulation</h3><p>Development, testing, education.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/01-why-simulation.md">Notes</a></li>
-      <li><span class="t">0:12</span><h3>Choosing a platform</h3><p>Realism, GPU, sensors.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/02-choosing-a-platform.md">Notes</a></li>
-      <li class="live"><span class="t">0:23</span><h3>Live demo</h3><p>Five demos, one rover.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/03-live-demo.md">Notes</a></li>
-      <li><span class="t">0:41</span><h3>Sim vs. hardware</h3><p>What transfers, what doesn't.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/04-sim-vs-hardware.md">Notes</a></li>
-      <li><span class="t">0:46</span><h3>Selecting tools</h3><p>Coursework and research.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/05-selecting-tools.md">Notes</a></li>
+      <li><span class="t">0:03</span><h3>Why simulation?</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/01-why-simulation.md">Notes</a></li>
+      <li><span class="t">0:12</span><h3>Choosing a platform</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/02-choosing-a-platform.md">Notes</a></li>
+      <li class="live"><span class="t">0:23</span><h3>Live demo</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/03-live-demo.md">Notes</a></li>
+      <li><span class="t">0:41</span><h3>Sim vs. hardware</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/04-sim-vs-hardware.md">Notes</a></li>
+      <li><span class="t">0:46</span><h3></h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/05-selecting-tools.md">Notes</a></li>
       <li><span class="t">0:49</span><h3>Discussion</h3><p>Q&amp;A and resources.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/06-discussion.md">Notes</a></li>
     </ol>
   </div>
@@ -258,18 +258,18 @@ footer p{margin:4px 0}
 <section class="block night" id="demos">
   <div class="wrap">
     <h2>The live demo</h2>
-    <p class="lede">One small rover in a 6 × 6 m studio, carrying wheel encoders, an IMU, a bumper, a 15-beam lidar and an RGB-D camera. The whole robot is one readable XML file, and everything runs on a laptop with MuJoCo. These are the recorded versions; in class they run live.</p>
+    <p class="lede">Made from ArtifactArena, these demo files load easily if you have PIP and Python installed. Running on Mujoco, you can test out some basic simulations, and even load your own custom robot built from ArtifactArena. These are the recorded versions; in class we can run them live.</p>
     <div class="demos">
       <article class="demo">
         <div class="frame"><video src="site_assets/01_physics_playground.mp4" poster="site_assets/01_physics_playground_poster.jpg" controls muted playsinline preload="none"></video></div>
         <div class="head"><span class="num">1</span><h3>Physics playground</h3></div>
-        <p>Foam, rubber and steel: same shapes, different materials. Only rubber bounces; only steel slides. Change one number, re-run in seconds.</p>
+        <p>Foam, rubber and steel simulations to understand material friction. Try to play with the gravity function1</p>
         <code>python demo/01_physics_playground.py</code>
       </article>
       <article class="demo">
         <div class="frame"><video src="site_assets/02_drive_the_robot.mp4" poster="site_assets/02_drive_the_robot_poster.jpg" controls muted playsinline preload="none"></video></div>
         <div class="head"><span class="num">2</span><h3>Drive the robot</h3></div>
-        <p>Arrow-key driving, then an autopilot aimed at the goal. With no sensors it drives straight into the blue box.</p>
+        <p></p>
         <code>python demo/02_drive_the_robot.py</code>
       </article>
       <article class="demo">
@@ -302,7 +302,7 @@ footer p{margin:4px 0}
 <section class="block sun" id="platforms">
   <div class="wrap">
     <h2>Choosing a platform</h2>
-    <p class="lede">Three platforms, judged on the three criteria that matter most for robotics: physics realism, GPU acceleration and sensor fidelity. Checked October 2026.</p>
+    <p class="lede">Three main platforms are discussed here, judged on the three criteria that matter most for robotics: physics realism, GPU acceleration and sensor fidelity.</p>
     <div class="tablewrap">
       <table>
         <thead><tr><th scope="col"></th><th scope="col">NVIDIA Isaac Sim + Isaac Lab</th><th scope="col">mjlab (MuJoCo + MuJoCo Warp)</th><th scope="col">Unity + Robotics Hub</th></tr></thead>
