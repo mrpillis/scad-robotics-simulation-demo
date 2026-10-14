@@ -93,7 +93,7 @@ code (kinematics, controllers, mapping, A*, perception, dashboard) is in
 | **4 · Camera perception** | RGB → HSV → threshold → blob → steering; search, track, arrive | `python demo/04_camera_perception.py` | [mp4](demo/output/04_camera_perception.mp4) |
 | **5 · Sim-to-real gap** | Domain randomization: open loop vs. closed loop in 12 worlds | `python demo/05_sim_to_real_gap.py` | [png](demo/output/05_sim_to_real_gap.png) |
 | 6 · Scale and speed | Real-time factor and parallel throughput of this laptop | `python demo/06_scale_and_speed.py` | — |
-| 7 · Robot arena | Capstone: the full ArtifactArena competition engine | `python demo/07_robot_arena_match.py` | `WITH_ARENA=1 bash demo/render_all.sh` |
+| 7 · Robot arena | Capstone: the full ArtifactArena competition engine (first: `pip install -r requirements-arena.txt`) | `python demo/07_robot_arena_match.py` | `WITH_ARENA=1 bash demo/render_all.sh` |
 
 Add `--headless` to Demos 1–4 to record a video instead of opening a window.
 `bash demo/render_all.sh` refreshes every fallback video and the handout images.
