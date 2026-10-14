@@ -1,7 +1,0 @@
-# Minimal requirements for the SCAD teaching demos (demo/01-06).
-# Demo 7 and the ArtifactArena engine need the full pip_requirements.txt.
-mujoco>=3.3
-numpy>=1.26
-opencv-python>=4.8
-imageio>=2.31
-imageio-ffmpeg>=0.4
