@@ -253,7 +253,7 @@ footer p{margin:4px 0}
       <li><span class="t">0:12</span><h3>Choosing a platform</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/02-choosing-a-platform.md">Notes</a></li>
       <li class="live"><span class="t">0:23</span><h3>Live demo</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/03-live-demo.md">Notes</a></li>
       <li><span class="t">0:41</span><h3>Sim vs. hardware</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/04-sim-vs-hardware.md">Notes</a></li>
-      <li><span class="t">0:46</span><h3></h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/05-selecting-tools.md">Notes</a></li>
+      <li><span class="t">0:46</span><h3>Selecting tools</h3><p></p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/05-selecting-tools.md">Notes</a></li>
       <li><span class="t">0:49</span><h3>Discussion</h3><p>Q&amp;A and resources.</p><a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/06-discussion.md">Notes</a></li>
     </ol>
   </div>
@@ -283,7 +283,7 @@ rm -rf .venv
 python3.12 -m venv .venv
 source .venv/bin/activate
 python --version</code></pre>
-    <p>The last line must say <code>Python 3.12</code>. If it still says 3.9, stop and paste the output here.</p>
+    <p>The last line should say <code>Python 3.12</code>. If it shows an older version, make sure you typed <code>python3.12</code> (not <code>python3</code>) when creating the environment.</p>
   </li>
 
   <li>
@@ -294,24 +294,31 @@ python demo/03_sensor_dashboard.py</code></pre>
   </li>
 
   <li>
-    <strong>Alternative: Python 3.13</strong>
-    <p>Run these one at a time:</p>
-    <pre><code class="language-bash">cd ~/scad-robotics-simulation-demo
-rm -rf .venv
-python3.13 -m venv .venv
-source .venv/bin/activate
-python --version
-pip install --upgrade pip
-pip install -r requirements-demo.txt
-python demo/03_sensor_dashboard.py</code></pre>
-  </li>
+  <strong>Run the demos</strong>
+  <p>From the project folder, with the environment active:</p>
+  <pre><code class="language-bash">cd ~/scad-robotics-simulation-demo
+source .venv/bin/activate</code></pre>
+  <ul>
+    <li><strong>Demo 1: Physics playground</strong> (foam / rubber / steel)
+      <pre><code class="language-bash">mjpython demo/01_physics_playground.py</code></pre>
+    </li>
+    <li><strong>Demo 2: Drive the robot</strong> (arrow keys, Enter for autopilot)
+      <pre><code class="language-bash">mjpython demo/02_drive_the_robot.py</code></pre>
+    </li>
+    <li><strong>Demo 3: Sensor dashboard</strong>
+      <pre><code class="language-bash">python demo/03_sensor_dashboard.py</code></pre>
+    </li>
+    <li><strong>Demo 3 with 3-D viewer</strong> (same self-driving robot, lidar beams visible)
+      <pre><code class="language-bash">mjpython demo/03_sensor_dashboard.py --viewer</code></pre>
+    </li>
+  </ul>
+</li>
 </ol>
     </ul>
     <div class="demos">
       <article class="demo">
         <div class="frame"><video src="site_assets/01_physics_playground.mp4" poster="site_assets/01_physics_playground_poster.jpg" controls muted playsinline preload="none"></video></div>
         <div class="head"><span class="num">1</span><h3>Physics playground</h3></div>
-        <p>Foam, rubber and steel simulations to understand material friction. Try to play with the gravity function1</p>
         <code>python demo/01_physics_playground.py</code>
       </article>
       <article class="demo">
@@ -323,13 +330,11 @@ python demo/03_sensor_dashboard.py</code></pre>
       <article class="demo">
         <div class="frame"><video src="site_assets/03_sensor_dashboard.mp4" poster="site_assets/03_sensor_dashboard_poster.jpg" controls muted playsinline preload="none"></video></div>
         <div class="head"><span class="num">3</span><h3>Sensor dashboard</h3></div>
-        <p>The same robot, sensing. Lidar builds a map, A* plans a route, pure pursuit follows it. Camera, depth, lidar, IMU and wheel encoders update live.</p>
         <code>python demo/03_sensor_dashboard.py</code>
       </article>
       <article class="demo">
         <div class="frame"><video src="site_assets/04_camera_perception.mp4" poster="site_assets/04_camera_perception_poster.jpg" controls muted playsinline preload="none"></video></div>
         <div class="head"><span class="num">4</span><h3>Camera perception</h3></div>
-        <p>Camera only: RGB to HSV, threshold the orange beacon, find the blob, steer toward it. Search, track, arrive.</p>
         <code>python demo/04_camera_perception.py</code>
       </article>
       <article class="demo wide">
@@ -337,7 +342,6 @@ python demo/03_sensor_dashboard.py</code></pre>
           <div class="frame"><img src="site_assets/05_sim_to_real.png" alt="Two overhead views. Left: twelve robots replaying ideal commands scatter and crash. Right: twelve sensing robots reach the goal in eleven worlds." loading="lazy"></div>
           <div>
             <div class="head" style="margin-top:0"><span class="num">5</span><h3>The sim-to-real gap</h3></div>
-            <p>Twelve randomized "realities": different floor and tire friction, mass, motor strength, sensor noise and 30 ms of delay.</p>
             <div class="stat"><div class="bad"><b>2/12</b><span>replaying the ideal commands</span></div><div class="good"><b>11/12</b><span>sensing and re-planning</span></div></div>
             <code>python demo/05_sim_to_real_gap.py</code>
           </div>
@@ -363,15 +367,21 @@ python demo/03_sensor_dashboard.py</code></pre>
         </tbody>
       </table>
     </div>
-    <p class="summary">Use Unity when the experience matters most, MuJoCo or mjlab when the physics and learning matter most, and Isaac Sim when the sensors and photorealism matter most. Expect to combine them.</p>
-    <p class="note">Also covered: Gazebo for ROS 2 robot stacks, Webots for first courses, and Newton, the new open GPU physics engine. <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/lecture/02-choosing-a-platform.md">Full comparison with sources</a>.</p>
   </div>
 </section>
-
+<div style="max-width: 800px; margin: 0 auto; padding: 64px 16px;">
+  <iframe
+    src="https://www.youtube.com/embed/3D9sJFruR9E"
+    title="YouTube video player"
+    style="display: block; width: 100%; aspect-ratio: 16 / 9; border: 0;"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+    allowfullscreen>
+  </iframe>
+</div>
 <section class="block teal" id="handouts">
   <div class="wrap">
     <h2>Handouts</h2>
-    <p class="lede">Four handouts go with the session, for students to keep and continue with afterwards.</p>
+    <p class="lede">Four handouts go with the session, for you!.</p>
     <div class="handouts">
       <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/handouts/01-vocabulary.md"><h3>Vocabulary</h3><p>About fifty terms, from time step to domain randomization, grouped by topic.</p></a>
       <a href="https://github.com/mrpillis/scad-robotics-simulation-demo/blob/main/handouts/02-learning-resources.md"><h3>Learning resources</h3><p>Notebooks to start today, platform docs, free books, video courses and key papers.</p></a>
@@ -388,7 +398,7 @@ python demo/03_sensor_dashboard.py</code></pre>
 <section class="block" id="resources">
   <div class="wrap">
     <h2>Start today</h2>
-    <p class="lede">Everything in the demo runs on a laptop. Three commands:</p>
+    <p class="lede">Everything in the demo runs on a laptop. (most compatible)</p>
     <pre><code>git clone https://github.com/mrpillis/scad-robotics-simulation-demo
 cd scad-robotics-simulation-demo && pip install -r requirements-demo.txt
 python demo/03_sensor_dashboard.py</code></pre>
